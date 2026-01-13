@@ -1,310 +1,312 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PrimeTrust Bank</title>
-<style>
-* { box-sizing:border-box; font-family: Arial, Helvetica, sans-serif; }
-body { margin:0; background: linear-gradient(135deg,#020024,#0a3d62,#000814); color:#fff; min-height:100vh; }
-header { padding:15px; text-align:center; background:rgba(0,0,0,0.6);}
-header h2{margin:0;}
-.container { padding:20px; max-width:1200px; margin:auto; }
-.hidden { display:none; }
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1.0">  
+<title>PrimeTrust Bank</title>  
+<style>  
+* { box-sizing:border-box; font-family: Arial, Helvetica, sans-serif; }  
+body { margin:0; background: linear-gradient(135deg,#020024,#0a3d62,#000814); color:#fff; min-height:100vh; }  
+header { padding:15px; text-align:center; background:rgba(0,0,0,0.6);}  
+header h2{margin:0;}  
+.container { padding:20px; max-width:1200px; margin:auto; }  
+.hidden { display:none; }  
 
-button{
-  padding:12px; border:none; border-radius:8px; background:#1e90ff; color:#fff; font-size:15px; cursor:pointer; margin-top:8px;
-}
-input{
-  width:100%; padding:12px; margin:8px 0; border-radius:6px; border:1px solid #1e90ff; background:#000; color:#fff;
-  font-size:15px;
-}
-.card{
-  background:#0a1a2f; color:#fff; border-radius:12px; padding:20px; margin-bottom:20px;
-}
-.grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px;}
-.badge{ padding:4px 8px; border-radius:5px; font-size:12px; background:#1e90ff; color:#fff;}
-.logout{ background:#444;}
-.userCard{ border:1px solid #1e90ff; padding:15px; border-radius:10px; margin-bottom:15px;}
-.userCard h3{margin:5px 0;}
-.userCard p{margin:3px 0;}
-.userCard button{margin-right:5px;}
-</style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
+button{ padding:12px; border:none; border-radius:8px; background:#1e90ff; color:#fff; font-size:15px; cursor:pointer; margin-top:8px; }  
+input{ width:100%; padding:12px; margin:8px 0; border-radius:6px; border:1px solid #1e90ff; background:#000; color:#fff; font-size:15px; }  
+.card{ background:#0a1a2f; color:#fff; border-radius:12px; padding:20px; margin-bottom:20px; }  
+.grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px;}  
+.badge{ padding:4px 8px; border-radius:5px; font-size:12px; background:#1e90ff; color:#fff;}  
+.logout{ background:#444;}  
+.userCard{ border:1px solid #1e90ff; padding:15px; border-radius:10px; margin-bottom:15px;}  
+.userCard h3{margin:5px 0;}  
+.userCard p{margin:3px 0;}  
+.userCard button{margin-right:5px;}  
+</style>  
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  
+</head>  
 
-<body>
-<header>
-  <h2>PrimeTrust Bank</h2>
-</header>
+<body>  
+<header>  
+  <h2>PrimeTrust Bank</h2>  
+</header>  
 
-<div class="container">
+<div class="container">  
 
-<!-- LANDING -->
-<div id="landing">
-  <img src="https://images.unsplash.com/photo-1599423300746-b62533397364?auto=format&fit=crop&w=1200&q=80" alt="Bank buildings" style="width:100%; border-radius:12px; margin-bottom:20px;">
-  <h1>Secure. Reliable. Prime.</h1>
-  <p>Welcome to PrimeTrust Bank</p>
-  <button onclick="showAuth()">Login / Register</button>
-</div>
+<!-- LANDING -->  
+<div id="landing">  
+  <img src="https://images.unsplash.com/photo-1599423300746-b62533397364?auto=format&fit=crop&w=1200&q=80" alt="Bank buildings" style="width:100%; border-radius:12px; margin-bottom:20px;">  
+  <h1>Secure. Reliable. Prime.</h1>  
+  <p>Welcome to PrimeTrust Bank</p>  
+  <button onclick="showAuth()">Login / Register</button>  
+</div>  
 
-<!-- AUTH -->
-<div id="auth" class="hidden card">
-  <h3>Login or Register</h3>
-  <input id="username" placeholder="Username">
-  <input id="password" type="password" placeholder="Password">
-  <button onclick="login()">Continue</button>
-</div>
+<!-- AUTH -->  
+<div id="auth" class="hidden card">  
+  <h3>Login or Register</h3>  
+  <input id="username" placeholder="Username">  
+  <input id="password" type="password" placeholder="Password">  
+  <button onclick="login()">Continue</button>  
+</div>  
 
-<!-- USER DASHBOARD -->
-<div id="userDash" class="hidden">
-  <h2>User Dashboard</h2>
-  <div class="grid">
-    <div class="card">
-      <h3>Account Balance</h3>
-      <h1 id="userBalance">$0.00</h1>
-    </div>
-    <div class="card">
-      <h3>Transfer Funds</h3>
-      <input id="recipient" placeholder="Recipient Username">
-      <input id="amount" placeholder="Amount">
-      <button onclick="transferFunds()">Transfer</button>
-    </div>
-  </div>
-  <div class="card">
-    <h3>Recent Transactions</h3>
-    <ul id="userTransactions">
-      <li>No transactions yet</li>
-    </ul>
-  </div>
-  <button class="logout" onclick="reset()">Logout</button>
-</div>
+<!-- USER DASHBOARD -->  
+<div id="userDash" class="hidden">  
+  <h2>User Dashboard</h2>  
+  <div class="grid">  
+    <div class="card">  
+      <h3>Account Balance</h3>  
+      <h1 id="userBalance">$0.00</h1>  
+    </div>  
+    <div class="card">  
+      <h3>Transfer Funds</h3>  
+      <input id="recipient" placeholder="Recipient Username">  
+      <input id="amount" placeholder="Amount">  
+      <button onclick="transferFunds()">Transfer</button>  
+    </div>  
+  </div>  
+  <div class="card">  
+    <h3>Recent Transactions</h3>  
+    <ul id="userTransactions">  
+      <li>No transactions yet</li>  
+    </ul>  
+  </div>  
+  <button class="logout" onclick="reset()">Logout</button>  
+</div>  
 
-<!-- BANKER DASHBOARD -->
-<div id="bankerDash" class="hidden">
-  <h2>Banker Dashboard</h2>
-  <div class="grid">
-    <div class="card">
-      <h3>Total Users</h3>
-      <h1 id="totalUsers">0</h1>
-    </div>
-    <div class="card">
-      <h3>Total Funds</h3>
-      <h1 id="totalFunds">$0.00</h1>
-    </div>
-  </div>
+<!-- BANKER DASHBOARD -->  
+<div id="bankerDash" class="hidden">  
+  <h2>Banker Dashboard</h2>  
+  <div class="grid">  
+    <div class="card">  
+      <h3>Total Users</h3>  
+      <h1 id="totalUsers">0</h1>  
+    </div>  
+    <div class="card">  
+      <h3>Total Funds</h3>  
+      <h1 id="totalFunds">$0.00</h1>  
+    </div>  
+  </div>  
 
-  <div id="userList" class="card">
-    <h3>User Accounts</h3>
-  </div>
+  <div id="userList" class="card">  
+    <h3>User Accounts</h3>  
+  </div>  
 
-  <div id="actionButtons" class="card">
-    <h3>Perform Actions</h3>
-    <label>Select User:</label>
-    <select id="selectUser" onchange="selectTargetUser()">
-      <!-- Options populated dynamically -->
-    </select>
-    <br><br>
-    <button id="debitBtn">Debit</button>
-    <button id="creditBtn">Credit</button>
-    <button id="toggleStatusBtn">Freeze/Activate</button>
-  </div>
+  <div id="actionButtons" class="card">  
+    <h3>Perform Actions</h3>  
+    <label>Select User:</label>  
+    <select id="selectUser" onchange="selectTargetUser()">  
+      <!-- Options populated dynamically -->  
+    </select>  
+    <br><br>  
+    <button id="debitBtn">Debit</button>  
+    <button id="creditBtn">Credit</button>  
+    <button id="toggleStatusBtn">Freeze/Activate</button>  
+  </div>  
 
-  <button class="logout" onclick="reset()">Logout</button>
-</div>
+  <button class="logout" onclick="reset()">Logout</button>  
+</div>  
 
-</div>
+</div>  
 
-<script>
-// ===== ELEMENT REFERENCES =====
-const landing = document.getElementById("landing");
-const auth = document.getElementById("auth");
-const userDash = document.getElementById("userDash");
-const bankerDash = document.getElementById("bankerDash");
-const username = document.getElementById("username");
-const password = document.getElementById("password");
-const userBalance = document.getElementById("userBalance");
-const userTransactions = document.getElementById("userTransactions");
-const totalUsers = document.getElementById("totalUsers");
-const totalFunds = document.getElementById("totalFunds");
-const recipient = document.getElementById("recipient");
-const amount = document.getElementById("amount");
-const selectUserDropdown = document.getElementById("selectUser");
+<script>  
+// ===== ELEMENT REFERENCES =====  
+const landing = document.getElementById("landing");  
+const auth = document.getElementById("auth");  
+const userDash = document.getElementById("userDash");  
+const bankerDash = document.getElementById("bankerDash");  
+const username = document.getElementById("username");  
+const password = document.getElementById("password");  
+const userBalance = document.getElementById("userBalance");  
+const userTransactions = document.getElementById("userTransactions");  
+const totalUsers = document.getElementById("totalUsers");  
+const totalFunds = document.getElementById("totalFunds");  
+const recipient = document.getElementById("recipient");  
+const amount = document.getElementById("amount");  
+const selectUserDropdown = document.getElementById("selectUser");  
 
-// ===== CONSTANTS =====
-const BANKER_USER="banker@primetrust.com";
-const BANKER_PASS="admin123";
+// ===== CONSTANTS =====  
+const BANKER_USER="banker@primetrust.com";  
+const BANKER_PASS="admin123";  
 
-// ===== SUPABASE SETUP =====
-const SUPABASE_URL = "https://beahjjbypfpfqgnelzro.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_jJvSxgyG3LvdruFASfuHpw_jS7cpa_a";
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// ===== SUPABASE SETUP =====  
+const SUPABASE_URL = "https://beahjjbypfpfqgnelzro.supabase.co";  
+const SUPABASE_ANON_KEY = "sb_publishable_jJvSxgyG3LvdruFASfuHpw_jS7cpa_a";  
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);  
 
-// ===== STATE =====
-let currentUser="";
-let selectedUser=null;
+// ===== STATE =====  
+let currentUser="";  
+let selectedUser=null;  
 
-// ===== NAVIGATION =====
-function hideAll(){
-  landing.style.display="none";
-  auth.classList.add("hidden");
-  userDash.classList.add("hidden");
-  bankerDash.classList.add("hidden");
-}
-function showAuth(){ hideAll(); auth.classList.remove("hidden"); }
-function reset(){ hideAll(); showAuth(); }
+// ===== NAVIGATION =====  
+function hideAll(){  
+  landing.style.display="none";  
+  auth.classList.add("hidden");  
+  userDash.classList.add("hidden");  
+  bankerDash.classList.add("hidden");  
+}  
+function showAuth(){ hideAll(); auth.classList.remove("hidden"); }  
+function reset(){ hideAll(); showAuth(); }  
 
 // ===== LOGIN / REGISTER =====
-const { data, error } = await supabase.auth.signUp({ email: u, password: p });
-if (error) {
-  alert(error.message);
-  return;
-}
-
-// Initialize balance to 0.00
-const { error: insertError } = await supabase.from('accounts').insert([{ id: data.user.id, balance: 0 }]);
-if (insertError) {
-  alert(insertError.message);
-  return;
-  }
+async function login() {
+  const u = username.value.trim();
+  const p = password.value.trim();
 
   // BANKER LOGIN
-  if(u===BANKER_USER && p===BANKER_PASS){
+  if(u === BANKER_USER && p === BANKER_PASS){
     hideAll();
     bankerDash.classList.remove("hidden");
     await populateUserDropdown();
     return;
   }
 
-  // Check if user exists
-  let { data:userData, error } = await supabaseClient.from('accounts').select('*').eq('username', u).single();
-  if(!userData){
-    // register
-    const { data:newUser, error:insertErr } = await supabaseClient.from('accounts').insert({ username:u, password:p, balance:0, status:"Active" }).select().single();
-    if(insertErr){ alert("Error creating user"); return; }
-    userData = newUser;
-  } else {
-    if(userData.password !== p){ alert("Incorrect password"); return; }
-  }
-
-  currentUser = u;
-  hideAll();
-  userDash.classList.remove("hidden");
-  await updateUserDashboard();
-  await populateUserDropdown();
-}
-
-// ===== USER DASHBOARD =====
-async function updateUserDashboard(){
-  const { data:userData } = await supabaseClient.from('accounts').select('*').eq('username', currentUser).single();
-  userBalance.textContent = `$${parseFloat(userData.balance).toFixed(2)}`;
-
-  const { data:txs } = await supabaseClient.from('transactions').select('*').or(`from_user.eq.${currentUser},to_user.eq.${currentUser}`);
-  userTransactions.innerHTML = txs.length===0 ? "<li>No transactions yet</li>" :
-    txs.map(t=>`<li>${t.from_user} → ${t.to_user} : $${parseFloat(t.amount).toFixed(2)}</li>`).join('');
-}
-
-// ===== TRANSFER =====
-async function transferFunds(){
-  const to=recipient.value.trim();
-  const amt=parseFloat(amount.value);
-  if(amt<=0){ alert("Enter valid amount"); return; }
-
-  // check current balance
-  const { data:fromData } = await supabaseClient.from('accounts').select('*').eq('username', currentUser).single();
-  if(fromData.balance < amt){ alert("Insufficient funds"); return; }
-
-  // update balances
-  await supabaseClient.from('accounts').update({ balance:fromData.balance - amt }).eq('username', currentUser);
-  const { data:toData } = await supabaseClient.from('accounts').select('*').eq('username', to).single();
-  if(!toData){ alert("Recipient not found"); return; }
-  await supabaseClient.from('accounts').update({ balance:parseFloat(toData.balance)+amt }).eq('username', to);
-
-  // insert transaction
-  await supabaseClient.from('transactions').insert({ from_user:currentUser, to_user:to, amount:amt });
-
-  alert(`Transferred $${amt} to ${to}`);
-  await updateUserDashboard();
-  await populateUserDropdown();
-}
-
-// ===== BANKER DASHBOARD DROPDOWN & COUNTERS =====
-async function populateUserDropdown(){
-  const { data:allUsers } = await supabaseClient.from('accounts').select('*');
-
-  selectUserDropdown.innerHTML="";
-  if(allUsers.length===0){
-    const option=document.createElement("option");
-    option.textContent="No users yet";
-    selectUserDropdown.appendChild(option);
-    selectedUser=null;
-    selectUserDropdown.disabled=true;
-  } else {
-    selectUserDropdown.disabled=false;
-    allUsers.forEach((u, idx)=>{
-      const option=document.createElement("option");
-      option.value=u.username;
-      option.textContent=u.username;
-      selectUserDropdown.appendChild(option);
-      if(idx===0) selectedUser=u.username;
+  try {
+    // Check login with Supabase Auth
+    let { data: authUser, error: loginErr } = await supabaseClient.auth.signInWithPassword({
+      email: u + "@primetrust.com", // using dummy email
+      password: p
     });
-    selectUserDropdown.value=selectedUser;
+
+    if(loginErr && loginErr.status === 400) {
+      // User not found → register
+      const { data: newAuthUser, error: regErr } = await supabaseClient.auth.signUp({
+        email: u + "@primetrust.com",
+        password: p
+      });
+      if(regErr) { alert("Error creating user: " + regErr.message); return; }
+      authUser = newAuthUser.user;
+
+      // Insert into accounts table with matching id
+      const { error: insertErr } = await supabaseClient.from('accounts').insert([{
+        id: authUser.id,
+        username: u,
+        password: p,
+        balance: 0,
+        status: "Active"
+      }]);
+      if(insertErr) { alert("Error inserting account: " + insertErr.message); return; }
+    } else if(loginErr) {
+      alert("Login error: " + loginErr.message);
+      return;
+    }
+
+    currentUser = u;
+    hideAll();
+    userDash.classList.remove("hidden");
+    await updateUserDashboard();
+    await populateUserDropdown();
+
+  } catch(err) {
+    console.error(err);
+    alert("Unexpected error: " + err.message);
   }
-
-  // update counters
-  totalUsers.textContent = allUsers.length;
-  const total = allUsers.reduce((sum,u)=>sum + parseFloat(u.balance),0);
-  totalFunds.textContent = `$${total.toFixed(2)}`;
 }
 
-function selectTargetUser(){
-  selectedUser = selectUserDropdown.value;
-}
+// ===== USER DASHBOARD =====  
+async function updateUserDashboard(){  
+  const { data:userData } = await supabaseClient.from('accounts').select('*').eq('username', currentUser).single();  
+  userBalance.textContent = `$${parseFloat(userData.balance).toFixed(2)}`;  
 
-// ===== BANKER ACTIONS =====
-document.getElementById("debitBtn").addEventListener("click", async ()=>{
-  if(!selectedUser){ alert("Select a user first"); return; }
-  const amt = parseFloat(prompt(`Amount to debit from ${selectedUser}`));
-  if(isNaN(amt)||amt<=0){ alert("Invalid amount"); return; }
+  const { data:txs } = await supabaseClient.from('transactions').select('*').or(`from_user.eq.${currentUser},to_user.eq.${currentUser}`);  
+  userTransactions.innerHTML = txs.length===0 ? "<li>No transactions yet</li>" :  
+    txs.map(t=>`<li>${t.from_user} → ${t.to_user} : $${parseFloat(t.amount).toFixed(2)}</li>`).join('');  
+}  
 
-  const { data:userData } = await supabaseClient.from('accounts').select('*').eq('username', selectedUser).single();
-  if(userData.balance < amt){ alert("Insufficient funds"); return; }
+// ===== TRANSFER =====  
+async function transferFunds(){  
+  const to=recipient.value.trim();  
+  const amt=parseFloat(amount.value);  
+  if(amt<=0){ alert("Enter valid amount"); return; }  
 
-  await supabaseClient.from('accounts').update({ balance:userData.balance - amt }).eq('username', selectedUser);
-  await supabaseClient.from('transactions').insert({ from_user:selectedUser, to_user:"Bank", amount:amt });
-  alert(`Debited $${amt} from ${selectedUser}`);
-  await populateUserDropdown();
-});
+  const { data:fromData } = await supabaseClient.from('accounts').select('*').eq('username', currentUser).single();  
+  if(fromData.balance < amt){ alert("Insufficient funds"); return; }  
 
-document.getElementById("creditBtn").addEventListener("click", async ()=>{
-  if(!selectedUser){ alert("Select a user first"); return; }
-  const amt = parseFloat(prompt(`Amount to credit ${selectedUser}`));
-  if(isNaN(amt)||amt<=0){ alert("Invalid amount"); return; }
+  await supabaseClient.from('accounts').update({ balance:fromData.balance - amt }).eq('username', currentUser);  
+  const { data:toData } = await supabaseClient.from('accounts').select('*').eq('username', to).single();  
+  if(!toData){ alert("Recipient not found"); return; }  
+  await supabaseClient.from('accounts').update({ balance:parseFloat(toData.balance)+amt }).eq('username', to);  
 
-  const { data:userData } = await supabaseClient.from('accounts').select('*').eq('username', selectedUser).single();
-  await supabaseClient.from('accounts').update({ balance:parseFloat(userData.balance)+amt }).eq('username', selectedUser);
-  await supabaseClient.from('transactions').insert({ from_user:"Bank", to_user:selectedUser, amount:amt });
-  alert(`Credited $${amt} to ${selectedUser}`);
-  await populateUserDropdown();
-});
+  await supabaseClient.from('transactions').insert({ from_user:currentUser, to_user:to, amount:amt });  
 
-document.getElementById("toggleStatusBtn").addEventListener("click", async ()=>{
-  if(!selectedUser){ alert("Select a user first"); return; }
+  alert(`Transferred $${amt} to ${to}`);  
+  await updateUserDashboard();  
+  await populateUserDropdown();  
+}  
 
-  const { data:userData } = await supabaseClient.from('accounts').select('*').eq('username', selectedUser).single();
-  const newStatus = userData.status==="Active" ? "Frozen" : "Active";
-  await supabaseClient.from('accounts').update({ status:newStatus }).eq('username', selectedUser);
-  alert(`User ${selectedUser} is now ${newStatus}`);
-  await populateUserDropdown();
-});
+// ===== BANKER DASHBOARD DROPDOWN & COUNTERS =====  
+async function populateUserDropdown(){  
+  const { data:allUsers } = await supabaseClient.from('accounts').select('*');  
 
-// ===== REAL-TIME AUTO-REFRESH FOR BANKER DASHBOARD =====
-supabaseClient
-  .channel('public:accounts')
-  .on('postgres_changes', { event: '*', schema: 'public', table: 'accounts' }, payload => {
-    populateUserDropdown(); // refresh dropdown and counters automatically
-  })
-  .subscribe();
-</script>
-</body>
+  selectUserDropdown.innerHTML="";  
+  if(allUsers.length===0){  
+    const option=document.createElement("option");  
+    option.textContent="No users yet";  
+    selectUserDropdown.appendChild(option);  
+    selectedUser=null;  
+    selectUserDropdown.disabled=true;  
+  } else {  
+    selectUserDropdown.disabled=false;  
+    allUsers.forEach((u, idx)=>{  
+      const option=document.createElement("option");  
+      option.value=u.username;  
+      option.textContent=u.username;  
+      selectUserDropdown.appendChild(option);  
+      if(idx===0) selectedUser=u.username;  
+    });  
+    selectUserDropdown.value=selectedUser;  
+  }  
+
+  totalUsers.textContent = allUsers.length;  
+  const total = allUsers.reduce((sum,u)=>sum + parseFloat(u.balance),0);  
+  totalFunds.textContent = `$${total.toFixed(2)}`;  
+}  
+
+function selectTargetUser(){ selectedUser = selectUserDropdown.value; }  
+
+// ===== BANKER ACTIONS =====  
+document.getElementById("debitBtn").addEventListener("click", async ()=>{  
+  if(!selectedUser){ alert("Select a user first"); return; }  
+  const amt = parseFloat(prompt(`Amount to debit from ${selectedUser}`));  
+  if(isNaN(amt)||amt<=0){ alert("Invalid amount"); return; }  
+
+  const { data:userData } = await supabaseClient.from('accounts').select('*').eq('username', selectedUser).single();  
+  if(userData.balance < amt){ alert("Insufficient funds"); return; }  
+
+  await supabaseClient.from('accounts').update({ balance:userData.balance - amt }).eq('username', selectedUser);  
+  await supabaseClient.from('transactions').insert({ from_user:selectedUser, to_user:"Bank", amount:amt });  
+  alert(`Debited $${amt} from ${selectedUser}`);  
+  await populateUserDropdown();  
+});  
+
+document.getElementById("creditBtn").addEventListener("click", async ()=>{  
+  if(!selectedUser){ alert("Select a user first"); return; }  
+  const amt = parseFloat(prompt(`Amount to credit ${selectedUser}`));  
+  if(isNaN(amt)||amt<=0){ alert("Invalid amount"); return; }  
+
+  const { data:userData } = await supabaseClient.from('accounts').select('*').eq('username', selectedUser).single();  
+  await supabaseClient.from('accounts').update({ balance:parseFloat(userData.balance)+amt }).eq('username', selectedUser);  
+  await supabaseClient.from('transactions').insert({ from_user:"Bank", to_user:selectedUser, amount:amt });  
+  alert(`Credited $${amt} to ${selectedUser}`);  
+  await populateUserDropdown();  
+});  
+
+document.getElementById("toggleStatusBtn").addEventListener("click", async ()=>{  
+  if(!selectedUser){ alert("Select a user first"); return; }  
+
+  const { data:userData } = await supabaseClient.from('accounts').select('*').eq('username', selectedUser).single();  
+  const newStatus = userData.status==="Active" ? "Frozen" : "Active";  
+  await supabaseClient.from('accounts').update({ status:newStatus }).eq('username', selectedUser);  
+  alert(`User ${selectedUser} is now ${newStatus}`);  
+  await populateUserDropdown();  
+});  
+
+// ===== REAL-TIME AUTO-REFRESH FOR BANKER DASHBOARD =====  
+supabaseClient  
+  .channel('public:accounts')  
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'accounts' }, payload => {  
+    populateUserDropdown();  
+  })  
+  .subscribe();  
+</script>  
+</body>  
 </html>
