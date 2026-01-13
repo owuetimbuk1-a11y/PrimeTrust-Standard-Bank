@@ -155,9 +155,18 @@ function showAuth(){ hideAll(); auth.classList.remove("hidden"); }
 function reset(){ hideAll(); showAuth(); }
 
 // ===== LOGIN / REGISTER =====
-async function login(){
-  const u=username.value.trim();
-  const p=password.value.trim();
+const { data, error } = await supabase.auth.signUp({ email: u, password: p });
+if (error) {
+  alert(error.message);
+  return;
+}
+
+// Initialize balance to 0.00
+const { error: insertError } = await supabase.from('accounts').insert([{ id: data.user.id, balance: 0 }]);
+if (insertError) {
+  alert(insertError.message);
+  return;
+  }
 
   // BANKER LOGIN
   if(u===BANKER_USER && p===BANKER_PASS){
