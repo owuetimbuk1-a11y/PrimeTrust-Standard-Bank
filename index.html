@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,13 +9,12 @@ body, html {
   margin:0;
   padding:0;
   font-family: Arial, sans-serif;
-  background:#f4f4f4;
   height:100%;
 }
 
 /* LANDING */
 #landing {
-  background: url('https://images.unsplash.com/photo-1560185127-6f0c40d9aa35?auto=format&fit=crop&w=1350&q=80') center/cover no-repeat;
+  background: url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1350&q=80') center/cover no-repeat;
   color:white;
   height:100vh;
   display:flex;
@@ -26,15 +24,8 @@ body, html {
   text-align:center;
 }
 
-#landing h1 {
-  font-size:2.5em;
-  margin-bottom:0.5em;
-}
-
-#landing p {
-  font-size:1.2em;
-  margin-bottom:1em;
-}
+#landing h1 { font-size:2.5em; margin-bottom:0.5em; }
+#landing p { font-size:1.2em; margin-bottom:1em; }
 
 #enterButton {
   padding:10px 25px;
@@ -48,7 +39,7 @@ body, html {
 
 /* LOGIN */
 #login {
-  display:none; /* hidden initially */
+  display:none;
   position:relative;
   height:100vh;
   background:black;
@@ -110,10 +101,7 @@ th, td {
   text-align:center;
 }
 
-th {
-  background:#0d47a1;
-  color:white;
-}
+th { background:#0d47a1; color:white; }
 </style>
 </head>
 <body>
@@ -127,20 +115,18 @@ th {
 
 <!-- LOGIN -->
 <section id="login">
-  <img src="https://images.unsplash.com/photo-1564419181539-4c71f6f3a35f?auto=format&fit=crop&w=1350&q=80">
+  <img src="https://images.unsplash.com/photo-1573164574393-3a03f6f7f391?auto=format&fit=crop&w=1350&q=80" alt="Bank Building">
   <form id="loginForm">
     <input id="loginId" placeholder="Login ID" required>
     <input id="password" type="password" placeholder="Password" required>
-    <button type="submit">Login / Register</button>
+    <button type="submit" id="loginBtn">Login / Register</button>
   </form>
 </section>
 
 <!-- DASHBOARD -->
 <section id="dashboard">
   <h2 id="welcome"></h2>
-
   <div id="actions" class="card"></div>
-
   <div class="card">
     <h3>Transactions</h3>
     <table>
@@ -160,65 +146,67 @@ th {
 </section>
 
 <script>
-window.addEventListener('DOMContentLoaded', () => {
-  const landing = document.getElementById('landing')
-  const login = document.getElementById('login')
-  const loginForm = document.getElementById('loginForm')
-  const loginId = document.getElementById('loginId')
-  const password = document.getElementById('password')
-  const welcome = document.getElementById('welcome')
-  const actionsDiv = document.getElementById('actions')
+document.addEventListener('DOMContentLoaded', () => {
+  const landing = document.getElementById('landing');
+  const login = document.getElementById('login');
+  const loginForm = document.getElementById('loginForm');
+  const loginBtn = document.getElementById('loginBtn');
+  const loginId = document.getElementById('loginId');
+  const password = document.getElementById('password');
+  const welcome = document.getElementById('welcome');
+  const actionsDiv = document.getElementById('actions');
 
-  const AUTH_LOGIN_URL = 'https://beahjjbypfpfqgnelzro.supabase.co/functions/v1/auth-login'
-  const USER_TRANSFER_URL = 'https://beahjjbypfpfqgnelzro.supabase.co/functions/v1/user-transfer'
-  const BANKER_ACTIONS_URL = 'https://beahjjbypfpfqgnelzro.supabase.co/functions/v1/banker-actions'
+  const AUTH_LOGIN_URL = 'https://beahjjbypfpfqgnelzro.supabase.co/functions/v1/auth-login';
+  const USER_TRANSFER_URL = 'https://beahjjbypfpfqgnelzro.supabase.co/functions/v1/user-transfer';
+  const BANKER_ACTIONS_URL = 'https://beahjjbypfpfqgnelzro.supabase.co/functions/v1/banker-actions';
 
-  let CURRENT_USER = null
+  let CURRENT_USER = null;
 
-  /* -------- Enter button shows login -------- */
+  /* Show login on Enter */
   document.getElementById('enterButton').addEventListener('click', () => {
-    landing.style.display = 'none'
-    login.style.display = 'block'
-  })
+    landing.style.display = 'none';
+    login.style.display = 'block';
+  });
 
-  /* -------- LOGIN FORM -------- */
+  /* LOGIN FORM */
   loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    if (!loginId.value || !password.value) return alert('Please enter credentials');
 
-    const res = await fetch(AUTH_LOGIN_URL, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        login_id: loginId.value,
-        password: password.value
-      })
-    })
+    try {
+      const res = await fetch(AUTH_LOGIN_URL, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          login_id: loginId.value,
+          password: password.value
+        })
+      });
 
-    const data = await res.json()
-    if (!res.ok) return alert(data.error || 'Login failed')
+      const data = await res.json();
+      if (!res.ok) return alert(data.error || 'Login failed');
 
-    CURRENT_USER = data
+      CURRENT_USER = data;
+      login.style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      welcome.textContent = `Welcome ${data.login_id} (${data.role}) — Balance: ₦${data.balance}`;
+      renderActions();
+    } catch(err) {
+      alert('Error connecting to server');
+      console.error(err);
+    }
+  });
 
-    login.style.display = 'none'
-    document.getElementById('dashboard').style.display = 'block'
-
-    welcome.textContent = `Welcome ${data.login_id} (${data.role}) — Balance: ₦${data.balance}`
-
-    renderActions()
-  })
-
-  /* -------- UI ACTIONS -------- */
   function renderActions() {
-    actionsDiv.innerHTML = ''
-
+    actionsDiv.innerHTML = '';
     if (CURRENT_USER.role === 'user') {
       actionsDiv.innerHTML = `
         <h3>Transfer Funds</h3>
         <input id="toUser" placeholder="Receiver ID">
         <input id="amount" type="number" placeholder="Amount">
         <button id="sendBtn">Send</button>
-      `
-      document.getElementById('sendBtn').addEventListener('click', transfer)
+      `;
+      document.getElementById('sendBtn').addEventListener('click', transfer);
     }
 
     if (CURRENT_USER.role === 'banker') {
@@ -230,57 +218,62 @@ window.addEventListener('DOMContentLoaded', () => {
         <button id="debitBtn">Debit</button>
         <button id="freezeBtn">Freeze</button>
         <button id="unfreezeBtn">Unfreeze</button>
-      `
-      document.getElementById('creditBtn').addEventListener('click', () => banker('credit'))
-      document.getElementById('debitBtn').addEventListener('click', () => banker('debit'))
-      document.getElementById('freezeBtn').addEventListener('click', () => banker('freeze'))
-      document.getElementById('unfreezeBtn').addEventListener('click', () => banker('unfreeze'))
+      `;
+      document.getElementById('creditBtn').addEventListener('click', () => banker('credit'));
+      document.getElementById('debitBtn').addEventListener('click', () => banker('debit'));
+      document.getElementById('freezeBtn').addEventListener('click', () => banker('freeze'));
+      document.getElementById('unfreezeBtn').addEventListener('click', () => banker('unfreeze'));
     }
   }
 
-  /* -------- USER TRANSFER -------- */
   async function transfer() {
-    const toUser = document.getElementById('toUser').value
-    const amount = document.getElementById('amount').value
+    const toUser = document.getElementById('toUser').value;
+    const amount = document.getElementById('amount').value;
+    if (!toUser || !amount) return alert('Please fill all fields');
 
-    const res = await fetch(USER_TRANSFER_URL, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        from: CURRENT_USER.login_id,
-        to: toUser,
-        amount: Number(amount)
-      })
-    })
-
-    const data = await res.json()
-    if (!res.ok) return alert(data.error || 'Transfer failed')
-
-    alert('Transfer successful')
+    try {
+      const res = await fetch(USER_TRANSFER_URL, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          from: CURRENT_USER.login_id,
+          to: toUser,
+          amount: Number(amount)
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) return alert(data.error || 'Transfer failed');
+      alert('Transfer successful');
+    } catch(err) {
+      alert('Error connecting to server');
+      console.error(err);
+    }
   }
 
-  /* -------- BANKER ACTIONS -------- */
   async function banker(action) {
-    const targetUser = document.getElementById('targetUser').value
-    const amount = document.getElementById('amount').value
+    const targetUser = document.getElementById('targetUser').value;
+    const amount = document.getElementById('amount').value;
 
-    const res = await fetch(BANKER_ACTIONS_URL, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        banker: CURRENT_USER.login_id,
-        action,
-        user: targetUser,
-        amount: Number(amount)
-      })
-    })
-
-    const data = await res.json()
-    if (!res.ok) return alert(data.error || 'Action failed')
-
-    alert('Action successful')
+    try {
+      const res = await fetch(BANKER_ACTIONS_URL, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          banker: CURRENT_USER.login_id,
+          action,
+          user: targetUser,
+          amount: Number(amount)
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) return alert(data.error || 'Action failed');
+      alert('Action successful');
+    } catch(err) {
+      alert('Error connecting to server');
+      console.error(err);
+    }
   }
-})
+});
 </script>
 
 </body>
