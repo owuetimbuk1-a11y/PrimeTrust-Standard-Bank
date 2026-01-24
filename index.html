@@ -1,208 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Primetrust</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin:0; padding:0; }
-    nav { background:#1e3a8a; color:white; padding:1em; display:flex; justify-content:space-around; }
-    nav button { padding:0.5em 1em; background:white; color:#1e3a8a; border:none; cursor:pointer; }
-    section { padding:2em; text-align:center; }
-    input { padding:0.5em; margin:0.5em; width:200px; }
-    button.action { padding:0.5em 1em; margin:0.5em; cursor:pointer; }
-    img { max-width:100%; height:auto; }
-    .hidden { display:none; }
-    #transactions { max-width:500px; margin:2em auto; text-align:left; }
-    #transactions ul { list-style:none; padding:0; }
-  </style>
+<meta charset="UTF-8">
+<title>PrimeTrust</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#fff;}
+.container{max-width:420px;margin:60px auto;background:#020617;padding:20px;border-radius:8px;}
+h2{text-align:center;}
+input,button{width:100%;padding:12px;margin-top:10px;}
+input{background:#020617;color:white;border:1px solid #334155;}
+button{background:#2563eb;color:white;border:none;cursor:pointer;}
+button:disabled{opacity:0.6;}
+.hidden{display:none;}
+#msg,#actionMsg{margin-top:10px;text-align:center;word-break:break-word;}
+</style>
 </head>
+
 <body>
 
-  <nav>
-    <button data-section="landing">Home</button>
-    <button data-section="login">Login</button>
-    <button data-section="auto-create-login">Auto-Create</button>
-    <button data-section="user-transfer">Transfer</button>
-    <button data-section="banker-actions">Banker</button>
-    <button data-section="admin-actions">Admin</button>
-  </nav>
+<div class="container" id="loginBox">
+  <h2>PrimeTrust Login</h2>
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+  <button id="loginBtn">Login</button>
+  <div id="msg"></div>
+</div>
 
-  <!-- Landing Page -->
-  <section id="landing">
-    <h1>Welcome to Primetrust</h1>
-    <img src="https://yourcdn.com/mountain.jpg" alt="Mountain">
-    <img src="https://yourcdn.com/bank-building.jpg" alt="Bank Building">
-  </section>
+<div class="container hidden" id="dashboard">
+  <h2 id="roleTitle"></h2>
+  <button id="bankerBtn">Banker Action</button>
+  <button id="adminBtn">Admin Action</button>
+  <button id="transferBtn">User Transfer</button>
+  <div id="actionMsg"></div>
+</div>
 
-  <!-- Login Page -->
-  <section id="login" class="hidden">
-    <h2>Login</h2>
-    <input type="email" id="loginEmail" placeholder="Email">
-    <input type="password" id="loginPassword" placeholder="Password">
-    <br>
-    <button class="action" id="loginBtn">Login</button>
-    <p id="loginResult"></p>
-  </section>
-
-  <!-- Auto-Create Login Page -->
-  <section id="auto-create-login" class="hidden">
-    <h2>Auto Create User</h2>
-    <input type="email" id="autoEmail" placeholder="Email">
-    <input type="password" id="autoPassword" placeholder="Password">
-    <br>
-    <button class="action" id="autoCreateBtn">Create User</button>
-    <p id="autoCreateResult"></p>
-  </section>
-
-  <!-- User Transfer Page -->
-  <section id="user-transfer" class="hidden">
-    <h2>User Transfer</h2>
-    <input type="email" id="transferTo" placeholder="Recipient Email">
-    <input type="number" id="transferAmount" placeholder="Amount">
-    <br>
-    <button class="action" id="transferBtn">Transfer</button>
-    <p id="transferResult"></p>
-  </section>
-
-  <!-- Banker Actions Page -->
-  <section id="banker-actions" class="hidden">
-    <h2>Banker Actions</h2>
-    <input type="email" id="bankerEmail" placeholder="User Email">
-    <input type="number" id="bankerAmount" placeholder="Amount">
-    <br>
-    <button class="action" id="creditBtn">Credit</button>
-    <button class="action" id="debitBtn">Debit</button>
-    <button class="action" id="freezeBtn">Freeze</button>
-    <button class="action" id="unfreezeBtn">Unfreeze</button>
-    <p id="bankerResult"></p>
-  </section>
-
-  <!-- Admin Actions Page -->
-  <section id="admin-actions" class="hidden">
-    <h2>Admin Actions</h2>
-    <input type="email" id="adminEmail" placeholder="User Email">
-    <br>
-    <button class="action" id="deleteUserBtn">Delete User</button>
-    <button class="action" id="promoteBtn">Promote to Banker</button>
-    <button class="action" id="demoteBtn">Demote Banker</button>
-    <p id="adminResult"></p>
-  </section>
-
-  <!-- Transaction History -->
-  <section id="transactions" class="hidden">
-    <h2>Transaction History</h2>
-    <ul id="transactionList"></ul>
-  </section>
-
-  <script src="main.js"></script>
-</body>
-</html>
-
-// -------- Config --------
+<script>
+/* =======================
+   CONFIG: Supabase + Edge Function URLs
+======================= */
 const SUPABASE_URL = "https://beahjjbypfpfqgnelzro.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.3dL_wsIjrSYioi5CVM2FSvzZzf44cwXh_bDvKh9xgh0";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlYWhqamJ5cGZwZnFnbmVsenJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgxMzc1MzgsImV4cCI6MjA4MzcxMzUzOH0.3dL_wsIjrSYioi5CVM2FSvzZzf44cwXh_bDvKh9xgh0";
 
-// -------- Navigation --------
-document.querySelectorAll("nav button").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const target = btn.getAttribute("data-section");
-    document.querySelectorAll("section").forEach(s => s.classList.add("hidden"));
-    document.getElementById(target).classList.remove("hidden");
-  });
-});
+const ENDPOINTS = {
+  authLogin:    "https://beahjjbypfpfqgnelzro.supabase.co/functions/v1/auth-login",
+  bankerAction: "https://beahjjbypfpfqgnelzro.supabase.co/functions/v1/banker-actions",
+  adminAction:  "https://beahjjbypfpfqgnelzro.supabase.co/functions/v1/admin-actions",
+  userTransfer: "https://beahjjbypfpfqgnelzro.supabase.co/functions/v1/user-transfer"
+};
 
-// -------- Helper for fetch --------
-async function callFunction(name, payload) {
-  const res = await fetch(`${SUPABASE_URL}/functions/v1/${name}`, {
+/* =======================
+   DOM ELEMENTS
+======================= */
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const loginBtn = document.getElementById("loginBtn");
+const msg = document.getElementById("msg");
+const dashboard = document.getElementById("dashboard");
+const loginBox = document.getElementById("loginBox");
+const roleTitle = document.getElementById("roleTitle");
+const actionMsg = document.getElementById("actionMsg");
+const bankerBtn = document.getElementById("bankerBtn");
+const adminBtn = document.getElementById("adminBtn");
+const transferBtn = document.getElementById("transferBtn");
+
+let sessionToken = null;
+let userRole = null;
+
+/* =======================
+   SAFE FETCH HELPER
+======================= */
+async function safeFetch(url, options = {}) {
+  try {
+    if (!options.body) options.body = JSON.stringify({});
+    const res = await fetch(url, options);
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch { data = text; }
+    return { ok: res.ok, status: res.status, data };
+  } catch (err) {
+    console.error("Network/CORS error:", err);
+    return { ok: false, status: 0, data: err.message };
+  }
+}
+
+/* =======================
+   LOGIN
+======================= */
+loginBtn.onclick = async () => {
+  msg.innerText = "";
+  loginBtn.disabled = true;
+
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
+
+  if (!email || !password) {
+    msg.innerText = "Email and password required";
+    loginBtn.disabled = false;
+    return;
+  }
+
+  const { ok, data } = await safeFetch(ENDPOINTS.authLogin, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "apikey": SUPABASE_ANON_KEY
     },
-    body: JSON.stringify(payload)
+    body: JSON.stringify({ email, password })
   });
-  return res.json();
-}
 
-// -------- Login --------
-document.getElementById("loginBtn").addEventListener("click", async () => {
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
-  const result = await callFunction("auth-login", { email, password });
-  document.getElementById("loginResult").textContent = result.error || "Login successful!";
-});
+  console.log("Login response:", data);
 
-// -------- Auto-Create Login --------
-document.getElementById("autoCreateBtn").addEventListener("click", async () => {
-  const email = document.getElementById("autoEmail").value;
-  const password = document.getElementById("autoPassword").value;
-  const result = await callFunction("auto-create-login", { email, password });
-  document.getElementById("autoCreateResult").textContent = result.error || "User created!";
-});
-
-// -------- User Transfer --------
-document.getElementById("transferBtn").addEventListener("click", async () => {
-  const to = document.getElementById("transferTo").value;
-  const amount = document.getElementById("transferAmount").value;
-  const result = await callFunction("user-transfer", { to, amount });
-  document.getElementById("transferResult").textContent = result.error || "Transfer successful!";
-});
-
-// -------- Banker Actions --------
-document.getElementById("creditBtn").addEventListener("click", async () => {
-  const email = document.getElementById("bankerEmail").value;
-  const amount = document.getElementById("bankerAmount").value;
-  const result = await callFunction("banker-actions", { action:"credit", email, amount });
-  document.getElementById("bankerResult").textContent = result.error || "Credited!";
-});
-document.getElementById("debitBtn").addEventListener("click", async () => {
-  const email = document.getElementById("bankerEmail").value;
-  const amount = document.getElementById("bankerAmount").value;
-  const result = await callFunction("banker-actions", { action:"debit", email, amount });
-  document.getElementById("bankerResult").textContent = result.error || "Debited!";
-});
-document.getElementById("freezeBtn").addEventListener("click", async () => {
-  const email = document.getElementById("bankerEmail").value;
-  const result = await callFunction("banker-actions", { action:"freeze", email });
-  document.getElementById("bankerResult").textContent = result.error || "User frozen!";
-});
-document.getElementById("unfreezeBtn").addEventListener("click", async () => {
-  const email = document.getElementById("bankerEmail").value;
-  const result = await callFunction("banker-actions", { action:"unfreeze", email });
-  document.getElementById("bankerResult").textContent = result.error || "User unfrozen!";
-});
-
-// -------- Admin Actions --------
-document.getElementById("deleteUserBtn").addEventListener("click", async () => {
-  const email = document.getElementById("adminEmail").value;
-  const result = await callFunction("admin-actions", { action:"delete", email });
-  document.getElementById("adminResult").textContent = result.error || "User deleted!";
-});
-document.getElementById("promoteBtn").addEventListener("click", async () => {
-  const email = document.getElementById("adminEmail").value;
-  const result = await callFunction("admin-actions", { action:"promote", email });
-  document.getElementById("adminResult").textContent = result.error || "User promoted!";
-});
-document.getElementById("demoteBtn").addEventListener("click", async () => {
-  const email = document.getElementById("adminEmail").value;
-  const result = await callFunction("admin-actions", { action:"demote", email });
-  document.getElementById("adminResult").textContent = result.error || "User demoted!";
-});
-
-// -------- Transaction History --------
-async function loadTransactions() {
-  const result = await callFunction("user-transfer", { action:"history" });
-  const ul = document.getElementById("transactionList");
-  ul.innerHTML = "";
-  if (result.error) {
-    ul.innerHTML = `<li>${result.error}</li>`;
-  } else if (result.data && result.data.length) {
-    result.data.forEach(t => {
-      ul.innerHTML += `<li>${t.timestamp}: ${t.from} → ${t.to} = ${t.amount}</li>`;
-    });
-  } else {
-    ul.innerHTML = "<li>No transactions yet.</li>";
+  if (!ok) {
+    msg.innerText = data?.error || "Login failed";
+    loginBtn.disabled = false;
+    return;
   }
+
+  sessionToken = data.session?.access_token || data.access_token;
+  userRole = data.user?.role || "user";
+
+  if (!sessionToken) {
+    msg.innerText = "No session token returned";
+    loginBtn.disabled = false;
+    return;
+  }
+
+  loginBox.classList.add("hidden");
+  dashboard.classList.remove("hidden");
+  roleTitle.innerText = userRole.toUpperCase() + " DASHBOARD";
+  loginBtn.disabled = false;
+};
+
+/* =======================
+   SECURED ACTIONS
+======================= */
+bankerBtn.onclick = () => secureAction(ENDPOINTS.bankerAction);
+adminBtn.onclick  = () => secureAction(ENDPOINTS.adminAction);
+transferBtn.onclick = () => secureAction(ENDPOINTS.userTransfer);
+
+async function secureAction(url) {
+  actionMsg.innerText = "Processing...";
+  const { ok, data } = await safeFetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "apikey": SUPABASE_ANON_KEY,
+      "Authorization": "Bearer " + sessionToken
+    },
+    body: JSON.stringify({})
+  });
+
+  console.log("Action response:", data);
+  if (!ok) actionMsg.innerText = `Error: ${JSON.stringify(data)}`;
+  else actionMsg.innerText = JSON.stringify(data);
 }
-loadTransactions();
+</script>
+
+</body>
+  </html>
